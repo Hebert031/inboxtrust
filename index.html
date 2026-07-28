@@ -406,32 +406,63 @@
   .lab-note li{margin-top:4px}
 
   /* ---------- arquitetura ---------- */
-  .arch-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:48px}
-  @media (max-width:920px){.arch-grid{grid-template-columns:1fr}}
+  .arch-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:48px}
+  @media (max-width:980px){.arch-grid{grid-template-columns:1fr;max-width:560px}}
   .arch{
-    background:var(--card);border:1px solid var(--line);
-    border-radius:var(--radius);padding:28px;
+    --acc:var(--green);
+    background:linear-gradient(180deg,rgba(13,23,36,.92),rgba(9,17,28,.75));
+    border:1px solid var(--line);
+    border-radius:var(--radius);padding:26px 22px;
+    position:relative;overflow:hidden;
+    transition:border-color .25s,transform .25s;
   }
-  .arch h3{font-size:1.1rem;margin-bottom:20px;display:flex;align-items:center;gap:10px}
-  .arch h3 .pill{
-    font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;
-    padding:3px 10px;border-radius:999px;text-transform:uppercase;
+  .arch:hover{border-color:var(--acc);transform:translateY(-3px)}
+  .arch::before{content:"";position:absolute;inset:0 0 auto 0;height:2px;background:linear-gradient(90deg,var(--acc),transparent)}
+  .arch.a-esp{--acc:var(--cyan)}
+  .arch.a-vpn{--acc:var(--blue)}
+  .arch h3{
+    font-size:1.02rem;margin-bottom:22px;
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
   }
-  .arch.a-cap h3 .pill{background:rgba(34,197,94,.12);color:var(--green)}
-  .arch.a-esp h3 .pill{background:rgba(6,182,212,.12);color:var(--cyan)}
-  .flow{display:flex;flex-direction:column;align-items:stretch;gap:0}
+  .arch .pill{
+    font-family:var(--mono);font-size:.58rem;letter-spacing:.1em;
+    padding:3px 10px;border-radius:999px;text-transform:uppercase;flex:none;
+    background:rgba(34,197,94,.12);color:var(--green);
+  }
+  .arch.a-esp .pill{background:rgba(6,182,212,.12);color:var(--cyan)}
+  .arch.a-vpn .pill{background:rgba(59,130,246,.12);color:var(--blue)}
+  .flow{display:flex;flex-direction:column}
   .flow .node{
-    border:1px solid var(--line-strong);border-radius:10px;
-    padding:12px 16px;text-align:center;
-    font-family:var(--mono);font-size:.78rem;color:var(--text);
-    background:rgba(5,9,15,.5);
+    position:relative;border:1px solid var(--line);border-radius:12px;
+    padding:12px 14px 12px 54px;text-align:left;
+    background:rgba(5,9,15,.55);
+    font-family:var(--mono);font-size:.76rem;font-weight:600;color:var(--text);
+    transition:border-color .25s;
   }
-  .flow .node small{display:block;color:var(--muted);font-size:.66rem;margin-top:3px;letter-spacing:.03em}
-  .flow .node.hl-g{border-color:rgba(34,197,94,.5);box-shadow:0 0 18px rgba(34,197,94,.08)}
-  .flow .node.hl-c{border-color:rgba(6,182,212,.5);box-shadow:0 0 18px rgba(6,182,212,.08)}
-  .flow .arrow{
-    text-align:center;color:var(--muted);font-family:var(--mono);
-    font-size:.8rem;padding:6px 0;user-select:none;
+  .flow .node:hover{border-color:var(--acc)}
+  .flow .stp{
+    position:absolute;left:14px;top:50%;transform:translateY(-50%);
+    width:28px;height:28px;border-radius:9px;
+    display:grid;place-items:center;
+    font-size:.6rem;font-weight:600;color:var(--acc);
+    border:1px solid var(--acc);background:rgba(5,9,15,.7);
+  }
+  .flow .node small{display:block;color:var(--muted);font-size:.63rem;font-weight:400;margin-top:3px;letter-spacing:.02em}
+  .flow .node.hl{
+    border-color:var(--acc);
+    background:rgba(5,9,15,.8);
+    box-shadow:0 0 24px -8px var(--acc);
+  }
+  .flow .node.hl .stp{background:var(--acc);color:#03140a}
+  .flow .link{height:22px;position:relative}
+  .flow .link::before{
+    content:"";position:absolute;left:27px;top:-3px;bottom:3px;width:2px;
+    background:var(--acc);opacity:.35;
+  }
+  .flow .link::after{
+    content:"";position:absolute;left:23px;bottom:0;
+    border:5px solid transparent;border-top:6px solid var(--acc);
+    opacity:.6;
   }
 
   /* ---------- sobre ---------- */
@@ -811,32 +842,45 @@
   <div class="container">
     <span class="eyebrow">Tecnologia</span>
     <h2>Inteligência próxima do ambiente protegido.</h2>
-    <p class="section-lead">Nas duas frentes, o processamento acontece perto de onde os dados nascem — no pipeline de desenvolvimento ou dentro da própria rede — para reduzir exposição e aumentar o contexto das análises.</p>
+    <p class="section-lead">Em todas as frentes, o processamento acontece perto de onde os dados nascem — no pipeline de desenvolvimento, dentro da própria rede ou na sua infraestrutura — para reduzir exposição e aumentar o contexto das análises.</p>
 
     <div class="arch-grid">
       <div class="arch a-cap reveal">
         <h3>Capivara Security <span class="pill">plataforma</span></h3>
         <div class="flow">
-          <div class="node">Repositórios + Aplicações + Infraestrutura<small>GitHub · pipelines · ativos</small></div>
-          <div class="arrow">↓</div>
-          <div class="node">SAST · DAST · SCA · CVE<small>Semgrep · OWASP ZAP · Trivy · EPSS</small></div>
-          <div class="arrow">↓</div>
-          <div class="node hl-g">Capivara Security<small>correlação · contexto · assistente de IA</small></div>
-          <div class="arrow">↓</div>
-          <div class="node">Priorização · IA · Compliance · Jira<small>ação com contexto, não só alertas</small></div>
+          <div class="node"><span class="stp">01</span>Código e infraestrutura<small>GitHub · pipelines · ativos</small></div>
+          <div class="link"></div>
+          <div class="node"><span class="stp">02</span>Testes contínuos<small>SAST · DAST · SCA · CVE · EPSS</small></div>
+          <div class="link"></div>
+          <div class="node hl"><span class="stp">03</span>Capivara Security<small>correlação · contexto · assistente de IA</small></div>
+          <div class="link"></div>
+          <div class="node"><span class="stp">04</span>Priorização e ação<small>compliance · Jira · relatórios</small></div>
         </div>
       </div>
 
       <div class="arch a-esp reveal">
         <h3>Capivara WiFi Tools <span class="pill">embarcado</span></h3>
         <div class="flow">
-          <div class="node">Espectro Wi‑Fi + BLE<small>802.11 · GATT · piso de ruído · CSI</small></div>
-          <div class="arrow">↓</div>
-          <div class="node">Módulos de rádio embarcados<small>Monitor · IDS · Sentinela · Anti-Jam</small></div>
-          <div class="arrow">↓</div>
-          <div class="node hl-c">Painel web embarcado<small>Access Point próprio · offline · sem aplicativo</small></div>
-          <div class="arrow">↓</div>
-          <div class="node">Alarmes locais · IA local · Wireshark<small>os dados permanecem dentro da rede</small></div>
+          <div class="node"><span class="stp">01</span>Espectro Wi‑Fi + BLE<small>802.11 · GATT · piso de ruído · CSI</small></div>
+          <div class="link"></div>
+          <div class="node"><span class="stp">02</span>Módulos de rádio<small>Monitor · IDS · Sentinela · Anti-Jam</small></div>
+          <div class="link"></div>
+          <div class="node hl"><span class="stp">03</span>Painel web embarcado<small>Access Point próprio · offline · sem aplicativo</small></div>
+          <div class="link"></div>
+          <div class="node"><span class="stp">04</span>Análise local<small>alarmes · IA local · Wireshark · dados na rede</small></div>
+        </div>
+      </div>
+
+      <div class="arch a-vpn reveal">
+        <h3>Capivara VPN <span class="pill">acesso remoto</span></h3>
+        <div class="flow">
+          <div class="node"><span class="stp">01</span>Dispositivos da equipe<small>Windows · Linux · chaves individuais</small></div>
+          <div class="link"></div>
+          <div class="node"><span class="stp">02</span>Túnel criptografado<small>criptografia de ponta · até 3 nós</small></div>
+          <div class="link"></div>
+          <div class="node hl"><span class="stp">03</span>Capivara VPN<small>gestão de dispositivos · segmentação</small></div>
+          <div class="link"></div>
+          <div class="node"><span class="stp">04</span>Rede da empresa<small>sem servidores de terceiros</small></div>
         </div>
       </div>
     </div>
