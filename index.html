@@ -1,0 +1,829 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>InboxTrust — Segurança inteligente, do código ao sinal de rádio</title>
+<meta name="description" content="A InboxTrust desenvolve soluções próprias de cibersegurança: a plataforma Capivara Security (DevSecOps, vulnerabilidades, compliance e IA) e o Capivara ESP32 Security Lab, laboratório portátil de pesquisa Wi-Fi e BLE com IA local.">
+<link rel="icon" type="image/png" href="public/img/favicon.png">
+<meta property="og:title" content="InboxTrust — Segurança inteligente, do código ao sinal de rádio">
+<meta property="og:description" content="Soluções próprias de cibersegurança: Capivara Security (DevSecOps, vulnerabilidades, compliance e IA) e Capivara ESP32 Security Lab (pesquisa Wi-Fi e BLE com IA local).">
+<meta property="og:image" content="https://inboxtrust.com.br/public/img/og.jpg">
+<meta property="og:url" content="https://inboxtrust.com.br">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#05090F;
+    --bg2:#09111C;
+    --card:#0D1724;
+    --line:rgba(148,163,184,.14);
+    --line-strong:rgba(148,163,184,.26);
+    --green:#22C55E;
+    --cyan:#06B6D4;
+    --blue:#3B82F6;
+    --text:#F8FAFC;
+    --muted:#94A3B8;
+    --warn:#F59E0B;
+    --crit:#EF4444;
+    --sans:"Inter","Manrope",system-ui,"Segoe UI",Roboto,sans-serif;
+    --mono:"JetBrains Mono","IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+    --radius:14px;
+    --maxw:1120px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto}
+    *,*::before,*::after{animation:none!important;transition:none!important}
+  }
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--sans);
+    font-size:16px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;text-decoration:none}
+  img,svg{max-width:100%;display:block}
+  .container{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+
+  /* ---------- utilitários tipográficos ---------- */
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:.72rem;
+    font-weight:600;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:var(--cyan);
+  }
+  h1,h2,h3{text-wrap:balance;line-height:1.15}
+  h2{font-size:clamp(1.6rem,3.4vw,2.3rem);font-weight:700;margin:14px 0 16px}
+  .section-lead{color:var(--muted);max-width:62ch;font-size:1.05rem}
+  .mono{font-family:var(--mono)}
+
+  section{padding:96px 0;position:relative}
+  section.alt{background:var(--bg2)}
+
+  /* ---------- header ---------- */
+  header{
+    position:sticky;top:0;z-index:50;
+    background:rgba(5,9,15,.82);
+    backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav{
+    display:flex;align-items:center;justify-content:space-between;
+    height:68px;gap:20px;
+  }
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.05rem}
+  .brand-mark{height:46px;width:46px;display:block;flex:none}
+  .brand-name{font-weight:800;font-size:1.18rem;letter-spacing:-.01em;line-height:1}
+  .brand-name .bx{color:var(--blue)}
+  .brand-name .tr{color:var(--cyan)}
+  .brand-name small{
+    display:block;font-weight:500;font-size:.58rem;color:var(--muted);
+    letter-spacing:.16em;text-transform:uppercase;margin-top:4px;
+  }
+  footer .brand-mark{height:54px;width:54px}
+  .nav-links{display:flex;gap:26px;align-items:center;list-style:none}
+  .nav-links a{font-size:.9rem;color:var(--muted);transition:color .2s}
+  .nav-links a:hover,.nav-links a:focus-visible{color:var(--text)}
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    padding:11px 22px;border-radius:10px;font-weight:600;font-size:.92rem;
+    border:1px solid transparent;cursor:pointer;transition:transform .15s,box-shadow .2s,background .2s,border-color .2s;
+  }
+  .btn:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+  .btn-primary{
+    background:linear-gradient(135deg,var(--green),#16a34a);
+    color:#03140a;
+  }
+  .btn-primary:hover{box-shadow:0 0 24px rgba(34,197,94,.35);transform:translateY(-1px)}
+  .btn-ghost{border-color:var(--line-strong);color:var(--text);background:transparent}
+  .btn-ghost:hover{border-color:var(--cyan);background:rgba(6,182,212,.06)}
+  .btn-link{color:var(--muted);padding:11px 10px}
+  .btn-link:hover{color:var(--cyan)}
+  .nav .btn{padding:9px 18px}
+
+  .menu-toggle{
+    display:none;background:none;border:1px solid var(--line-strong);
+    border-radius:8px;padding:8px 10px;color:var(--text);cursor:pointer;
+  }
+  @media (max-width:920px){
+    .nav-links{
+      display:none;position:absolute;top:68px;left:0;right:0;
+      flex-direction:column;align-items:stretch;gap:0;
+      background:var(--bg2);border-bottom:1px solid var(--line);
+      padding:10px 24px 18px;
+    }
+    .nav-links.open{display:flex}
+    .nav-links li{border-bottom:1px solid var(--line)}
+    .nav-links li:last-child{border-bottom:none}
+    .nav-links a{display:block;padding:14px 4px;font-size:1rem}
+    .menu-toggle{display:block}
+    .nav .btn-primary{display:none}
+    .nav-links .btn-primary{display:inline-flex;margin-top:14px}
+  }
+  @media (min-width:921px){.nav-links .btn-primary{display:none}}
+
+  /* ---------- hero ---------- */
+  .hero{
+    padding:110px 0 100px;
+    background:
+      radial-gradient(ellipse 60% 50% at 75% 20%,rgba(6,182,212,.08),transparent),
+      radial-gradient(ellipse 50% 40% at 20% 80%,rgba(34,197,94,.06),transparent),
+      var(--bg);
+    overflow:hidden;
+  }
+  .hero-grid{
+    display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center;
+  }
+  @media (max-width:920px){.hero-grid{grid-template-columns:1fr;gap:48px}}
+  .hero h1{
+    font-size:clamp(2.1rem,5vw,3.3rem);
+    font-weight:800;
+    letter-spacing:-.02em;
+    margin:18px 0 20px;
+  }
+  .hero h1 .grad{
+    background:linear-gradient(90deg,var(--green),var(--cyan));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .hero p.lead{color:var(--muted);font-size:1.12rem;max-width:56ch;margin-bottom:32px}
+  .hero-ctas{display:flex;flex-wrap:wrap;gap:14px;align-items:center}
+  .hero-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:40px}
+  .tag{
+    font-family:var(--mono);font-size:.7rem;font-weight:500;
+    color:var(--muted);border:1px solid var(--line);
+    border-radius:999px;padding:5px 12px;background:rgba(13,23,36,.6);
+  }
+
+  /* painel visual do hero */
+  .hero-visual{position:relative}
+  .hero-art{
+    width:100%;height:auto;border-radius:var(--radius);
+    border:1px solid var(--line-strong);
+    box-shadow:0 24px 60px rgba(0,0,0,.5);
+  }
+  .hero-panel{
+    position:absolute;left:-14px;bottom:-38px;
+    width:min(330px,86%);
+    background:rgba(13,23,36,.92);
+  }
+  .hero-panel .telemetry{height:72px}
+  .hero-panel .metric-row{margin-top:10px}
+  .panel{
+    background:rgba(13,23,36,.82);
+    border:1px solid var(--line-strong);
+    border-radius:var(--radius);
+    box-shadow:0 24px 60px rgba(0,0,0,.45);
+    overflow:hidden;
+  }
+  .panel-bar{
+    display:flex;align-items:center;gap:8px;
+    padding:10px 16px;border-bottom:1px solid var(--line);
+    font-family:var(--mono);font-size:.72rem;color:var(--muted);
+  }
+  .dot{width:9px;height:9px;border-radius:50%}
+  .dot.g{background:var(--green)}.dot.y{background:var(--warn)}.dot.r{background:var(--crit)}
+  .panel-bar span{margin-left:8px}
+  .panel-body{padding:18px}
+  .telemetry{width:100%;height:120px}
+  .metric-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+  .metric{
+    border:1px solid var(--line);border-radius:10px;padding:10px 12px;
+    background:rgba(5,9,15,.5);
+  }
+  .metric .k{font-family:var(--mono);font-size:.66rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+  .metric .v{font-family:var(--mono);font-size:1.05rem;font-weight:600;margin-top:2px;font-variant-numeric:tabular-nums}
+  .metric .v.ok{color:var(--green)}.metric .v.warn{color:var(--warn)}.metric .v.info{color:var(--cyan)}
+  .hero-chip-float{
+    position:absolute;right:-10px;top:-22px;
+    background:var(--card);border:1px solid var(--line-strong);
+    border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:12px;
+    box-shadow:0 14px 40px rgba(0,0,0,.5);
+  }
+  @media (max-width:560px){
+    .hero-chip-float{position:static;margin-top:14px}
+    .hero-panel{position:static;width:100%;margin-top:14px}
+  }
+  .esp-chip{
+    width:44px;height:32px;border-radius:6px;flex:none;position:relative;
+    background:linear-gradient(135deg,#0f2233,#0a1826);
+    border:1px solid rgba(6,182,212,.5);
+  }
+  .esp-chip::before,.esp-chip::after{
+    content:"";position:absolute;left:6px;right:6px;height:3px;
+    background:repeating-linear-gradient(90deg,rgba(148,163,184,.6) 0 2px,transparent 2px 6px);
+  }
+  .esp-chip::before{top:-4px}.esp-chip::after{bottom:-4px}
+  .hero-chip-float .t{font-family:var(--mono);font-size:.72rem;color:var(--muted);line-height:1.5}
+  .hero-chip-float .t b{color:var(--cyan);font-weight:600}
+
+  /* ---------- cards de valor ---------- */
+  .cards-4{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:48px}
+  @media (max-width:980px){.cards-4{grid-template-columns:repeat(2,1fr)}}
+  @media (max-width:560px){.cards-4{grid-template-columns:1fr}}
+  .card{
+    background:var(--card);border:1px solid var(--line);
+    border-radius:var(--radius);padding:26px 24px;
+    transition:border-color .25s,transform .25s;
+  }
+  .card:hover{border-color:rgba(6,182,212,.4);transform:translateY(-3px)}
+  .card .icon{
+    width:40px;height:40px;border-radius:10px;margin-bottom:16px;
+    display:grid;place-items:center;
+    background:rgba(6,182,212,.1);border:1px solid rgba(6,182,212,.25);
+  }
+  .card .icon svg{width:20px;height:20px;stroke:var(--cyan)}
+  .card h3{font-size:1.05rem;margin-bottom:8px}
+  .card p{color:var(--muted);font-size:.92rem}
+
+  /* ---------- soluções ---------- */
+  .solutions{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:48px}
+  @media (max-width:920px){.solutions{grid-template-columns:1fr}}
+  .sol-card{
+    background:var(--card);border:1px solid var(--line);
+    border-radius:var(--radius);padding:34px 30px;
+    display:flex;flex-direction:column;gap:14px;
+    position:relative;overflow:hidden;
+  }
+  .sol-card::before{
+    content:"";position:absolute;inset:0 0 auto 0;height:2px;
+  }
+  .sol-card.capivara::before{background:linear-gradient(90deg,var(--green),transparent)}
+  .sol-card.esp32::before{background:linear-gradient(90deg,var(--cyan),transparent)}
+  .sol-card .eyebrow{font-size:.66rem}
+  .sol-card.esp32 .eyebrow{color:var(--green)}
+  .sol-card h3{font-size:1.45rem}
+  .sol-card .sub{color:var(--text);font-weight:500;font-size:1rem}
+  .sol-card p{color:var(--muted);font-size:.95rem}
+  .sol-card .actions{margin-top:auto;display:flex;gap:12px;flex-wrap:wrap;padding-top:10px}
+
+  /* ---------- seções de produto ---------- */
+  .prod-grid{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start;margin-top:40px}
+  @media (max-width:920px){.prod-grid{grid-template-columns:1fr}}
+  .feature-groups{display:grid;gap:14px}
+  .fgroup{
+    border:1px solid var(--line);border-radius:12px;padding:18px 20px;
+    background:rgba(13,23,36,.5);
+  }
+  .fgroup h4{
+    font-size:.8rem;font-family:var(--mono);letter-spacing:.1em;
+    text-transform:uppercase;color:var(--cyan);margin-bottom:10px;font-weight:600;
+  }
+  .fgroup ul{list-style:none;display:flex;flex-wrap:wrap;gap:8px}
+  .fgroup li{
+    font-size:.82rem;color:var(--muted);
+    border:1px solid var(--line);border-radius:8px;
+    padding:5px 11px;background:rgba(5,9,15,.4);
+  }
+  .quote{
+    border-left:2px solid var(--green);
+    padding:6px 0 6px 20px;margin:26px 0;
+    font-size:1.08rem;font-weight:500;color:var(--text);
+  }
+  #esp32 .quote{border-color:var(--cyan)}
+
+  /* dashboard capivara */
+  .dash-img{display:block;width:100%;height:auto}
+  .demo-note{
+    font-family:var(--mono);font-size:.66rem;color:var(--muted);
+    margin-top:12px;letter-spacing:.04em;
+  }
+  .prod-head{display:flex;gap:22px;align-items:center}
+  .prod-logo{width:80px;height:80px;flex:none;filter:drop-shadow(0 6px 18px rgba(0,0,0,.45))}
+  @media (max-width:560px){.prod-head{flex-direction:column;align-items:flex-start;gap:12px}}
+  .sol-logo{position:absolute;top:24px;right:24px;width:56px;height:56px;opacity:.95}
+  @media (max-width:560px){.sol-logo{width:44px;height:44px}}
+
+  /* módulos esp32 */
+  .modules{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:40px}
+  @media (max-width:920px){.modules{grid-template-columns:repeat(2,1fr)}}
+  @media (max-width:560px){.modules{grid-template-columns:1fr}}
+  .module{
+    border:1px solid var(--line);border-radius:12px;padding:20px;
+    background:var(--card);transition:border-color .25s;
+  }
+  .module:hover{border-color:rgba(34,197,94,.4)}
+  .module .mname{
+    font-family:var(--mono);font-size:.78rem;font-weight:600;
+    color:var(--green);letter-spacing:.08em;text-transform:uppercase;
+    display:flex;align-items:center;gap:8px;margin-bottom:8px;
+  }
+  .module .mname::before{content:"▸";color:var(--cyan)}
+  .module p{font-size:.86rem;color:var(--muted)}
+  .lab-note{
+    margin-top:40px;border:1px solid rgba(245,158,11,.3);
+    border-radius:var(--radius);padding:24px 26px;
+    background:rgba(245,158,11,.05);
+  }
+  .lab-note h4{display:flex;align-items:center;gap:10px;font-size:.95rem;margin-bottom:10px}
+  .lab-note h4 svg{width:18px;height:18px;stroke:var(--warn);flex:none}
+  .lab-note p{color:var(--muted);font-size:.92rem;max-width:80ch}
+  .lab-note ul{margin-top:10px;color:var(--muted);font-size:.9rem;padding-left:20px}
+  .lab-note li{margin-top:4px}
+
+  /* ---------- arquitetura ---------- */
+  .arch-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:48px}
+  @media (max-width:920px){.arch-grid{grid-template-columns:1fr}}
+  .arch{
+    background:var(--card);border:1px solid var(--line);
+    border-radius:var(--radius);padding:28px;
+  }
+  .arch h3{font-size:1.1rem;margin-bottom:20px;display:flex;align-items:center;gap:10px}
+  .arch h3 .pill{
+    font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;
+    padding:3px 10px;border-radius:999px;text-transform:uppercase;
+  }
+  .arch.a-cap h3 .pill{background:rgba(34,197,94,.12);color:var(--green)}
+  .arch.a-esp h3 .pill{background:rgba(6,182,212,.12);color:var(--cyan)}
+  .flow{display:flex;flex-direction:column;align-items:stretch;gap:0}
+  .flow .node{
+    border:1px solid var(--line-strong);border-radius:10px;
+    padding:12px 16px;text-align:center;
+    font-family:var(--mono);font-size:.78rem;color:var(--text);
+    background:rgba(5,9,15,.5);
+  }
+  .flow .node small{display:block;color:var(--muted);font-size:.66rem;margin-top:3px;letter-spacing:.03em}
+  .flow .node.hl-g{border-color:rgba(34,197,94,.5);box-shadow:0 0 18px rgba(34,197,94,.08)}
+  .flow .node.hl-c{border-color:rgba(6,182,212,.5);box-shadow:0 0 18px rgba(6,182,212,.08)}
+  .flow .arrow{
+    text-align:center;color:var(--muted);font-family:var(--mono);
+    font-size:.8rem;padding:6px 0;user-select:none;
+  }
+
+  /* ---------- sobre ---------- */
+  .about-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:56px;align-items:start;margin-top:8px}
+  @media (max-width:920px){.about-grid{grid-template-columns:1fr;gap:40px}}
+  .about-grid .body p{color:var(--muted);margin-bottom:16px;max-width:62ch}
+  .principles{display:grid;gap:12px}
+  .principle{
+    display:flex;gap:14px;align-items:flex-start;
+    border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+    background:var(--card);
+  }
+  .principle .n{
+    font-family:var(--mono);font-size:.7rem;color:var(--cyan);
+    border:1px solid rgba(6,182,212,.3);border-radius:6px;
+    padding:2px 8px;flex:none;margin-top:2px;
+  }
+  .principle div h4{font-size:.95rem;margin-bottom:3px}
+  .principle div p{font-size:.86rem;color:var(--muted)}
+
+  /* ---------- contato ---------- */
+  .contact-box{
+    margin-top:48px;
+    background:linear-gradient(135deg,rgba(34,197,94,.08),rgba(6,182,212,.08));
+    border:1px solid var(--line-strong);
+    border-radius:18px;padding:52px 40px;text-align:center;
+  }
+  .contact-box h3{font-size:clamp(1.4rem,3vw,1.9rem);margin-bottom:14px}
+  .contact-box p{color:var(--muted);max-width:58ch;margin:0 auto 30px}
+  .contact-ctas{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+  .contact-alt{
+    margin-top:26px;font-family:var(--mono);font-size:.8rem;color:var(--muted);
+  }
+  .contact-alt a{color:var(--cyan)}
+  .contact-alt a:hover{text-decoration:underline}
+  .contact-reasons{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:44px;text-align:left;
+  }
+  @media (max-width:920px){.contact-reasons{grid-template-columns:1fr}}
+  .reason{border:1px solid var(--line);border-radius:12px;padding:18px 20px;background:var(--card)}
+  .reason h4{font-size:.92rem;margin-bottom:5px;color:var(--text)}
+  .reason p{font-size:.84rem;color:var(--muted)}
+
+  /* ---------- footer ---------- */
+  footer{border-top:1px solid var(--line);padding:44px 0;background:var(--bg)}
+  .foot{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;align-items:flex-start}
+  .foot-note{color:var(--muted);font-size:.8rem;max-width:52ch;margin-top:12px}
+  .foot-links{display:flex;gap:22px;flex-wrap:wrap;list-style:none}
+  .foot-links a{color:var(--muted);font-size:.85rem}
+  .foot-links a:hover{color:var(--text)}
+  .foot-bottom{
+    margin-top:34px;padding-top:20px;border-top:1px solid var(--line);
+    display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;
+    font-family:var(--mono);font-size:.7rem;color:var(--muted);
+  }
+
+  /* reveal on scroll */
+  .reveal{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
+  .reveal.in{opacity:1;transform:none}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container nav">
+    <a class="brand" href="#inicio" aria-label="InboxTrust — início">
+      <img class="brand-mark" src="public/img/logo-mark.png" alt="">
+      <span class="brand-name"><span class="bx">Inbox</span><span class="tr">Trust</span><small>cybersecurity · ai</small></span>
+    </a>
+    <nav aria-label="Navegação principal">
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#inicio">Início</a></li>
+        <li><a href="#solucoes">Soluções</a></li>
+        <li><a href="#capivara">Capivara</a></li>
+        <li><a href="#esp32">ESP32 Lab</a></li>
+        <li><a href="#tecnologia">Tecnologia</a></li>
+        <li><a href="#sobre">Sobre</a></li>
+        <li><a href="#contato">Contato</a></li>
+        <li><a class="btn btn-primary" href="#contato">Solicitar demonstração</a></li>
+      </ul>
+    </nav>
+    <a class="btn btn-primary" href="#contato">Solicitar demonstração</a>
+    <button class="menu-toggle" id="menuToggle" aria-expanded="false" aria-controls="navLinks" aria-label="Abrir menu">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+  </div>
+</header>
+
+<main>
+
+<!-- ============ HERO ============ -->
+<section class="hero" id="inicio">
+  <div class="container hero-grid">
+    <div>
+      <span class="eyebrow">Cybersecurity · DevSecOps · AI · Embedded Security</span>
+      <h1>Segurança inteligente, <span class="grad">do código ao sinal de rádio.</span></h1>
+      <p class="lead">A InboxTrust desenvolve soluções próprias para centralizar riscos, automatizar análises, proteger aplicações e investigar ambientes Wi‑Fi e BLE com inteligência artificial local.</p>
+      <div class="hero-ctas">
+        <a class="btn btn-primary" href="#solucoes">Conhecer as soluções</a>
+        <a class="btn btn-ghost" href="#contato">Falar com a InboxTrust</a>
+        <a class="btn btn-link" href="#tecnologia">Ver tecnologia →</a>
+      </div>
+      <div class="hero-tags" aria-label="Áreas de atuação">
+        <span class="tag">SAST</span><span class="tag">DAST</span><span class="tag">SCA</span>
+        <span class="tag">IDS</span><span class="tag">Wi‑Fi</span><span class="tag">BLE</span>
+        <span class="tag">IA local</span><span class="tag">Compliance</span>
+      </div>
+    </div>
+
+    <div class="hero-visual" aria-hidden="true">
+      <img class="hero-art" src="public/img/capivara-ai.webp" alt="" width="1400" height="787">
+      <div class="panel hero-panel">
+        <div class="panel-bar">
+          <span class="dot g"></span><span class="dot y"></span><span class="dot r"></span>
+          <span>inboxtrust · telemetria</span>
+        </div>
+        <div class="panel-body">
+          <svg class="telemetry" viewBox="0 0 400 120" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="tg1" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#06B6D4" stop-opacity=".25"/>
+                <stop offset="1" stop-color="#06B6D4" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <g stroke="rgba(148,163,184,.1)" stroke-width="1">
+              <line x1="0" y1="30" x2="400" y2="30"/><line x1="0" y1="60" x2="400" y2="60"/><line x1="0" y1="90" x2="400" y2="90"/>
+            </g>
+            <path d="M0 85 L30 80 L60 88 L90 60 L120 66 L150 40 L180 52 L210 35 L240 48 L270 30 L300 44 L330 26 L360 38 L400 22 L400 120 L0 120 Z" fill="url(#tg1)"/>
+            <path d="M0 85 L30 80 L60 88 L90 60 L120 66 L150 40 L180 52 L210 35 L240 48 L270 30 L300 44 L330 26 L360 38 L400 22" fill="none" stroke="#06B6D4" stroke-width="2"/>
+            <path d="M0 100 L40 96 L80 102 L120 90 L160 95 L200 82 L240 90 L280 78 L320 86 L360 72 L400 80" fill="none" stroke="#22C55E" stroke-width="1.6" stroke-dasharray="1 0"/>
+            <circle cx="400" cy="22" r="3.4" fill="#06B6D4"/>
+            <circle cx="400" cy="80" r="3" fill="#22C55E"/>
+          </svg>
+          <div class="metric-row">
+            <div class="metric"><div class="k">Pipelines</div><div class="v ok">OK</div></div>
+            <div class="metric"><div class="k">Canais 2.4GHz</div><div class="v info">1–13</div></div>
+            <div class="metric"><div class="k">IDS</div><div class="v ok">ativo</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="hero-chip-float">
+        <span class="esp-chip"></span>
+        <span class="t"><b>ESP32-S3</b> · painel embarcado<br>monitor 802.11 · BLE · IA local</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PROPOSTA DE VALOR ============ -->
+<section class="alt" id="valor">
+  <div class="container">
+    <span class="eyebrow">Por que a InboxTrust</span>
+    <h2>Segurança fragmentada gera pontos cegos.</h2>
+    <p class="section-lead">Aplicações, infraestrutura, ativos, redes sem fio e alertas costumam ficar espalhados em ferramentas diferentes. A InboxTrust conecta essas camadas para transformar dados técnicos em contexto, prioridade e ação.</p>
+
+    <div class="cards-4">
+      <div class="card reveal">
+        <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6z"/></svg></span>
+        <h3>Visibilidade unificada</h3>
+        <p>Centralização de riscos, ativos, vulnerabilidades e evidências técnicas em um único ponto de operação.</p>
+      </div>
+      <div class="card reveal">
+        <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M9 9h6v6H9z"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2"/></svg></span>
+        <h3>Inteligência local</h3>
+        <p>Análises assistidas por modelos de IA que podem operar no ambiente do cliente, reduzindo exposição de dados.</p>
+      </div>
+      <div class="card reveal">
+        <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4.5 4.5 0 0 0-6 6L3 18v3h3l5.7-5.7a4.5 4.5 0 0 0 6-6L14 13l-3-3 3.7-3.7z"/></svg></span>
+        <h3>Engenharia aplicada</h3>
+        <p>Produtos desenvolvidos a partir de problemas reais de infraestrutura, DevSecOps e segurança de redes.</p>
+      </div>
+      <div class="card reveal">
+        <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 8.5-7 10-4-1.5-7-5.5-7-10V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg></span>
+        <h3>Controle e privacidade</h3>
+        <p>Arquiteturas que priorizam autonomia, execução local e transparência sobre o tratamento das informações.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SOLUÇÕES ============ -->
+<section id="solucoes">
+  <div class="container">
+    <span class="eyebrow">Soluções</span>
+    <h2>Duas frentes. Uma mesma visão de segurança.</h2>
+    <p class="section-lead">Da gestão de vulnerabilidades no pipeline até o espectro de rádio do ambiente físico, os produtos da InboxTrust compartilham o mesmo princípio: contexto antes do alerta.</p>
+
+    <div class="solutions">
+      <div class="sol-card capivara reveal">
+        <img class="sol-logo" src="public/img/logo-capivara.png" alt="">
+        <span class="eyebrow">Plataforma · ShieldOps AI</span>
+        <h3>Capivara Security</h3>
+        <p class="sub">Uma central de operações para segurança de aplicações, infraestrutura e DevSecOps.</p>
+        <p>Reúne diferentes disciplinas de segurança em uma única plataforma, ajudando equipes a visualizar riscos, acompanhar ativos, executar testes e priorizar ações com apoio de inteligência artificial.</p>
+        <div class="actions">
+          <a class="btn btn-ghost" href="#capivara">Conhecer a Capivara</a>
+          <a class="btn btn-primary" href="#contato">Solicitar demonstração</a>
+        </div>
+      </div>
+
+      <div class="sol-card esp32 reveal">
+        <span class="eyebrow">Hardware · Pesquisa sem fio</span>
+        <h3>Capivara ESP32 Security Lab</h3>
+        <p class="sub">Um laboratório portátil de segurança Wi‑Fi e BLE com painel embarcado, IDS e IA local.</p>
+        <p>Transforma um ESP32-S3 em uma plataforma de pesquisa e monitoramento de redes sem fio. A placa cria sua própria interface web, executa módulos de rádio e registra alarmes para análise local.</p>
+        <div class="actions">
+          <a class="btn btn-ghost" href="#esp32">Explorar o ESP32 Lab</a>
+          <a class="btn btn-link" href="#tecnologia">Ver arquitetura →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CAPIVARA ============ -->
+<section class="alt" id="capivara">
+  <div class="container">
+    <div class="prod-head">
+      <img class="prod-logo" src="public/img/logo-capivara.png" alt="Logo da Capivara Security">
+      <div>
+        <span class="eyebrow">Produto · Capivara Security</span>
+        <h2>Menos abas, menos ruído e mais contexto para decidir o que corrigir primeiro.</h2>
+      </div>
+    </div>
+    <p class="section-lead">A Capivara Security conecta os resultados de testes, scanners e integrações a um fluxo único de priorização, com apoio de IA e visão executiva e operacional.</p>
+
+    <div class="prod-grid">
+      <div class="feature-groups reveal">
+        <div class="fgroup">
+          <h4>Gestão e visibilidade</h4>
+          <ul>
+            <li>Dashboard executivo e operacional</li>
+            <li>Gestão de vulnerabilidades</li>
+            <li>Inventário de ativos</li>
+            <li>Relatórios de risco</li>
+            <li>Análise de CVE e EPSS</li>
+            <li>Relatórios técnicos e executivos</li>
+          </ul>
+        </div>
+        <div class="fgroup">
+          <h4>Testes e integrações</h4>
+          <ul>
+            <li>Integração com GitHub</li>
+            <li>Alertas de Code Scanning</li>
+            <li>Dependabot</li>
+            <li>Secret Scanning</li>
+            <li>SCA com Trivy</li>
+            <li>SAST com Semgrep</li>
+            <li>DAST com OWASP ZAP</li>
+            <li>Diagnóstico e reconhecimento autorizado</li>
+            <li>Integração com Jira</li>
+          </ul>
+        </div>
+        <div class="fgroup">
+          <h4>Compliance</h4>
+          <ul>
+            <li>NIST CSF 2.0</li>
+            <li>PCI DSS</li>
+            <li>ISO 27001</li>
+            <li>SOC 2</li>
+            <li>LGPD</li>
+          </ul>
+        </div>
+        <div class="fgroup">
+          <h4>Plataforma e IA</h4>
+          <ul>
+            <li>Assistente de IA</li>
+            <li>Autenticação, MFA e RBAC</li>
+            <li>Priorização assistida</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="reveal">
+        <div class="panel">
+          <div class="panel-bar">
+            <span class="dot g"></span><span class="dot y"></span><span class="dot r"></span>
+            <span>capivara · preview executivo do dashboard</span>
+          </div>
+          <img class="dash-img" src="public/img/dash-preview.webp" alt="Preview executivo do dashboard da Capivara Security, com scans, vulnerabilidades, integrações e score de segurança — dados demonstrativos" width="1400" height="787" loading="lazy">
+        </div>
+        <p class="demo-note">// dados demonstrativos — não representam clientes ou ambientes reais</p>
+        <blockquote class="quote">“Menos abas, menos ruído e mais contexto para decidir o que corrigir primeiro.”</blockquote>
+        <div class="hero-ctas">
+          <a class="btn btn-primary" href="#contato">Solicitar demonstração</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ESP32 LAB ============ -->
+<section id="esp32">
+  <div class="container">
+    <span class="eyebrow">Produto · Capivara ESP32 Security Lab</span>
+    <h2>Segurança sem fio estudada no hardware, não apenas no dashboard.</h2>
+    <p class="section-lead">O ESP32 Lab transforma um ESP32-S3 em um laboratório portátil de pesquisa Wi‑Fi e BLE: painel web embarcado, operação pelo celular sem aplicativo, Access Point próprio, funcionamento offline e dados mantidos dentro da rede — com integração a um LLM local para conversar sobre logs e alarmes.</p>
+
+    <div class="modules">
+      <div class="module reveal"><div class="mname">Monitor</div><p>Sniffer 802.11 passivo, eventos em tempo real e inspeção técnica de frames.</p></div>
+      <div class="module reveal"><div class="mname">BLE</div><p>Scanner de dispositivos, identificação de fabricante e análise GATT em ambiente autorizado.</p></div>
+      <div class="module reveal"><div class="mname">Anti-Jam</div><p>Observação do piso de ruído, atividade por canal e sinais de interferência.</p></div>
+      <div class="module reveal"><div class="mname">Radar CSI</div><p>Pesquisa de presença, movimento e variações de sinal sem uso de câmera.</p></div>
+      <div class="module reveal"><div class="mname">IDS</div><p>Detecção de eventos suspeitos, inventário de transmissores e alarmes de rede.</p></div>
+      <div class="module reveal"><div class="mname">Sentinela</div><p>Vigilância contínua em segundo plano, compatível com as limitações de um único rádio.</p></div>
+      <div class="module reveal"><div class="mname">Wireshark</div><p>Exportação de frames para análise ao vivo por USB, direto na sua estação de trabalho.</p></div>
+      <div class="module reveal"><div class="mname">IA local</div><p>Chat sobre logs e alarmes com LLM executado localmente — nada sai do seu ambiente.</p></div>
+      <div class="module reveal"><div class="mname">Inventário</div><p>Registro local de alarmes e inventário de transmissores do ambiente monitorado.</p></div>
+    </div>
+
+    <div class="lab-note reveal">
+      <h4>
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+        Módulos controlados de laboratório
+      </h4>
+      <p>Algumas funções de teste ativo existem exclusivamente para pesquisa em redes próprias ou formalmente autorizadas, e são apresentadas como ferramentas de estudo — nunca de ataque:</p>
+      <ul>
+        <li>testes controlados de resiliência 802.11;</li>
+        <li>simulação de eventos de laboratório;</li>
+        <li>validação de proteções como PMF/802.11w;</li>
+        <li>pesquisa educacional em ambiente autorizado.</li>
+      </ul>
+    </div>
+
+    <div class="hero-ctas" style="margin-top:36px">
+      <a class="btn btn-primary" href="#contato">Explorar o ESP32 Lab</a>
+      <a class="btn btn-ghost" href="#tecnologia">Ver arquitetura</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TECNOLOGIA / ARQUITETURA ============ -->
+<section class="alt" id="tecnologia">
+  <div class="container">
+    <span class="eyebrow">Tecnologia</span>
+    <h2>Inteligência próxima do ambiente protegido.</h2>
+    <p class="section-lead">Nas duas frentes, o processamento acontece perto de onde os dados nascem — no pipeline de desenvolvimento ou dentro da própria rede — para reduzir exposição e aumentar o contexto das análises.</p>
+
+    <div class="arch-grid">
+      <div class="arch a-cap reveal">
+        <h3>Capivara Security <span class="pill">plataforma</span></h3>
+        <div class="flow">
+          <div class="node">Repositórios + Aplicações + Infraestrutura<small>GitHub · pipelines · ativos</small></div>
+          <div class="arrow">↓</div>
+          <div class="node">SAST · DAST · SCA · CVE<small>Semgrep · OWASP ZAP · Trivy · EPSS</small></div>
+          <div class="arrow">↓</div>
+          <div class="node hl-g">Capivara Security<small>correlação · contexto · assistente de IA</small></div>
+          <div class="arrow">↓</div>
+          <div class="node">Priorização · IA · Compliance · Jira<small>ação com contexto, não só alertas</small></div>
+        </div>
+      </div>
+
+      <div class="arch a-esp reveal">
+        <h3>ESP32 Security Lab <span class="pill">embarcado</span></h3>
+        <div class="flow">
+          <div class="node">Espectro Wi‑Fi + BLE<small>802.11 · GATT · piso de ruído · CSI</small></div>
+          <div class="arrow">↓</div>
+          <div class="node">ESP32-S3 · módulos de rádio<small>Monitor · IDS · Sentinela · Anti-Jam</small></div>
+          <div class="arrow">↓</div>
+          <div class="node hl-c">Painel web embarcado<small>Access Point próprio · offline · sem aplicativo</small></div>
+          <div class="arrow">↓</div>
+          <div class="node">Alarmes locais · IA local · Wireshark<small>os dados permanecem dentro da rede</small></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SOBRE ============ -->
+<section id="sobre">
+  <div class="container">
+    <span class="eyebrow">Sobre a InboxTrust</span>
+    <h2>Segurança criada por quem coloca a mão na infraestrutura.</h2>
+    <div class="about-grid">
+      <div class="body">
+        <p>A InboxTrust é uma empresa brasileira de segurança da informação que desenvolve soluções próprias de cibersegurança, automação, inteligência artificial local e pesquisa aplicada em redes sem fio.</p>
+        <p>Nossos produtos nascem de problemas reais: ferramentas fragmentadas, alertas sem contexto, dependência de serviços externos e pouca visibilidade sobre o que acontece entre o código e o espectro de rádio. A resposta é engenharia — plataformas que integram segurança, infraestrutura e desenvolvimento, com inteligência executada perto dos dados.</p>
+        <p>Acreditamos em pesquisa responsável: todo recurso de teste ativo é tratado como instrumento de laboratório, para uso em ambientes próprios ou formalmente autorizados.</p>
+      </div>
+      <div class="principles">
+        <div class="principle reveal"><span class="n">01</span><div><h4>Autonomia</h4><p>Menos dependência de ferramentas fragmentadas e serviços externos.</p></div></div>
+        <div class="principle reveal"><span class="n">02</span><div><h4>Privacidade</h4><p>Inteligência local e transparência sobre o tratamento das informações.</p></div></div>
+        <div class="principle reveal"><span class="n">03</span><div><h4>Integração</h4><p>Segurança, infraestrutura e desenvolvimento operando como uma coisa só.</p></div></div>
+        <div class="principle reveal"><span class="n">04</span><div><h4>Pesquisa responsável</h4><p>Tecnologia usada para entender e proteger ambientes, nunca para atacá-los.</p></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CONTATO ============ -->
+<section class="alt" id="contato">
+  <div class="container">
+    <span class="eyebrow">Contato</span>
+    <h2>Vamos conversar sobre o seu ambiente.</h2>
+
+    <div class="contact-reasons">
+      <div class="reason reveal"><h4>Demonstração</h4><p>Veja a Capivara Security e o ESP32 Lab em funcionamento, com dados demonstrativos.</p></div>
+      <div class="reason reveal"><h4>Implantação</h4><p>Converse sobre como as soluções se encaixam na sua infraestrutura e no seu pipeline.</p></div>
+      <div class="reason reveal"><h4>Parcerias e pesquisa</h4><p>Proponha parcerias, acompanhe o desenvolvimento ou conheça a visão da InboxTrust.</p></div>
+    </div>
+
+    <div class="contact-box reveal">
+      <h3>Solicite uma demonstração</h3>
+      <p>Conte um pouco sobre o seu cenário — aplicações, infraestrutura ou redes sem fio — e retornaremos com uma conversa técnica, sem promessas irreais.</p>
+      <div class="contact-ctas">
+        <a class="btn btn-primary" href="mailto:contato@inboxtrust.com.br?subject=Solicita%C3%A7%C3%A3o%20de%20demonstra%C3%A7%C3%A3o%20%E2%80%94%20InboxTrust">Solicitar demonstração</a>
+        <a class="btn btn-ghost" href="mailto:contato@inboxtrust.com.br?subject=Contato%20%E2%80%94%20InboxTrust">Falar com a InboxTrust</a>
+      </div>
+      <p class="contact-alt">ou escreva para <a href="mailto:contato@inboxtrust.com.br">contato@inboxtrust.com.br</a></p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="container">
+    <div class="foot">
+      <div>
+        <a class="brand" href="#inicio" aria-label="InboxTrust — início">
+          <img class="brand-mark" src="public/img/logo-mark.png" alt="">
+          <span class="brand-name"><span class="bx">Inbox</span><span class="tr">Trust</span><small>cybersecurity · ai</small></span>
+        </a>
+        <p class="foot-note">Tecnologia brasileira de segurança da informação. Capivara Security e Capivara ESP32 Security Lab são produtos InboxTrust.</p>
+      </div>
+      <ul class="foot-links">
+        <li><a href="#solucoes">Soluções</a></li>
+        <li><a href="#capivara">Capivara Security</a></li>
+        <li><a href="#esp32">ESP32 Lab</a></li>
+        <li><a href="#tecnologia">Tecnologia</a></li>
+        <li><a href="#sobre">Sobre</a></li>
+        <li><a href="#contato">Contato</a></li>
+      </ul>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 InboxTrust · inboxtrust.com.br</span>
+      <span>pesquisa responsável · uso autorizado · dados no seu ambiente</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // menu mobile
+  const toggle = document.getElementById('menuToggle');
+  const links = document.getElementById('navLinks');
+  toggle.addEventListener('click', () => {
+    const open = links.classList.toggle('open');
+    toggle.setAttribute('aria-expanded', open);
+  });
+  links.addEventListener('click', e => {
+    if (e.target.tagName === 'A') {
+      links.classList.remove('open');
+      toggle.setAttribute('aria-expanded', 'false');
+    }
+  });
+
+  // reveal on scroll
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const targets = document.querySelectorAll('.reveal');
+  if (reduced || !('IntersectionObserver' in window)) {
+    targets.forEach(el => el.classList.add('in'));
+  } else {
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(en => {
+        if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); }
+      });
+    }, { threshold: .12 });
+    targets.forEach(el => io.observe(el));
+  }
+</script>
+
+</body>
+</html>

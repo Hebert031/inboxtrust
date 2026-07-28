@@ -1,0 +1,9 @@
+# briefing interno
+AGENT.MD
+
+# artes originais pesadas (o site usa as versões otimizadas em public/img)
+/*.png
+public/img/logoinboxtrust.png
+public/img/logo_capivara.png
+public/img/dash_previwer.png
+public/img/capivara-redcap-backfround.png
