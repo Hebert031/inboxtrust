@@ -256,6 +256,14 @@
   }
   .sol-card.capivara::before{background:linear-gradient(90deg,var(--green),transparent)}
   .sol-card.esp32::before{background:linear-gradient(90deg,var(--cyan),transparent)}
+  .sol-card.vpn::before{background:linear-gradient(90deg,var(--blue),transparent)}
+  .sol-card.vpn{grid-column:1/-1}
+  .sol-card.vpn .eyebrow{color:var(--blue)}
+  .badge-dev{
+    display:inline-block;margin-left:10px;padding:3px 10px;border-radius:999px;
+    background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.35);
+    color:var(--warn);font-size:.62rem;letter-spacing:.1em;
+  }
   .sol-card .eyebrow{font-size:.66rem}
   .sol-card.esp32 .eyebrow{color:var(--green)}
   .sol-card h3{font-size:1.45rem}
@@ -562,8 +570,8 @@
 <section id="solucoes">
   <div class="container">
     <span class="eyebrow">Soluções</span>
-    <h2>Duas frentes. Uma mesma visão de segurança.</h2>
-    <p class="section-lead">Da gestão de vulnerabilidades no pipeline até o espectro de rádio do ambiente físico, os produtos da InboxTrust compartilham o mesmo princípio: contexto antes do alerta.</p>
+    <h2>Três frentes. Uma mesma visão de segurança.</h2>
+    <p class="section-lead">Da gestão de vulnerabilidades no pipeline ao espectro de rádio e ao acesso remoto, os produtos da InboxTrust compartilham o mesmo princípio: contexto antes do alerta — e dados no seu ambiente.</p>
 
     <div class="solutions">
       <div class="sol-card capivara reveal">
@@ -587,6 +595,17 @@
         <div class="actions">
           <a class="btn btn-ghost" href="#esp32">Explorar o WiFi Tools</a>
           <a class="btn btn-link" href="#tecnologia">Ver arquitetura →</a>
+        </div>
+      </div>
+
+      <div class="sol-card vpn reveal" id="vpn">
+        <img class="sol-logo" src="public/img/logo-capivara.png" alt="">
+        <span class="eyebrow">Acesso remoto <span class="badge-dev">em desenvolvimento</span></span>
+        <h3>Capivara VPN</h3>
+        <p class="sub">Rede privada corporativa, hospedada na sua própria infraestrutura.</p>
+        <p>Acesso remoto seguro para equipes, com gestão de dispositivos e chaves, segmentação de acessos e visibilidade centralizada — sem que o tráfego da sua empresa passe por servidores de terceiros.</p>
+        <div class="actions">
+          <a class="btn btn-ghost" href="#contato">Acompanhar o desenvolvimento</a>
         </div>
       </div>
     </div>
@@ -811,6 +830,7 @@
         <h4>Soluções</h4>
         <a href="#capivara">Capivara Security</a>
         <a href="#esp32">Capivara WiFi Tools</a>
+        <a href="#vpn">Capivara VPN</a>
         <a href="#tecnologia">Tecnologia</a>
       </nav>
       <nav class="foot-col" aria-label="Empresa">
