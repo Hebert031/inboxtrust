@@ -405,15 +405,21 @@
   .reason p{font-size:.84rem;color:var(--muted)}
 
   /* ---------- footer ---------- */
-  footer{border-top:1px solid var(--line);padding:44px 0;background:var(--bg)}
-  .foot{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;align-items:flex-start}
-  .foot-note{color:var(--muted);font-size:.8rem;max-width:52ch;margin-top:12px}
-  .foot-links{display:flex;gap:22px;flex-wrap:wrap;list-style:none}
-  .foot-links a{color:var(--muted);font-size:.85rem}
-  .foot-links a:hover{color:var(--text)}
+  footer{border-top:1px solid var(--line);padding:56px 0 40px;background:var(--bg)}
+  .foot-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:44px;align-items:start}
+  @media (max-width:920px){.foot-grid{grid-template-columns:1fr 1fr;gap:36px}}
+  @media (max-width:560px){.foot-grid{grid-template-columns:1fr}}
+  .foot-note{color:var(--muted);font-size:.84rem;max-width:38ch;margin-top:16px}
+  .foot-col h4{
+    font-family:var(--mono);font-size:.66rem;font-weight:600;
+    letter-spacing:.16em;text-transform:uppercase;color:var(--cyan);
+    margin-bottom:14px;
+  }
+  .foot-col a{display:block;color:var(--muted);font-size:.88rem;padding:5px 0;transition:color .2s}
+  .foot-col a:hover,.foot-col a:focus-visible{color:var(--text)}
   .foot-verse{
-    margin-top:38px;text-align:center;
-    font-style:italic;font-size:.92rem;color:var(--muted);
+    margin-top:48px;padding-top:30px;border-top:1px solid var(--line);
+    text-align:center;font-style:italic;font-size:.95rem;color:var(--muted);
   }
   .foot-verse span{
     display:block;margin-top:6px;font-style:normal;
@@ -421,7 +427,7 @@
     text-transform:uppercase;color:var(--cyan);
   }
   .foot-bottom{
-    margin-top:34px;padding-top:20px;border-top:1px solid var(--line);
+    margin-top:36px;padding-top:20px;border-top:1px solid var(--line);
     display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;
     font-family:var(--mono);font-size:.7rem;color:var(--muted);
   }
@@ -790,7 +796,7 @@
 
 <footer>
   <div class="container">
-    <div class="foot">
+    <div class="foot-grid">
       <div>
         <a class="brand" href="#inicio" aria-label="InboxTrust — início">
           <img class="brand-mark" src="public/img/logo-mark.png" alt="">
@@ -798,14 +804,23 @@
         </a>
         <p class="foot-note">Tecnologia brasileira de segurança da informação. Capivara Security e Capivara ESP32 Security Lab são produtos InboxTrust.</p>
       </div>
-      <ul class="foot-links">
-        <li><a href="#solucoes">Soluções</a></li>
-        <li><a href="#capivara">Capivara Security</a></li>
-        <li><a href="#esp32">ESP32 Lab</a></li>
-        <li><a href="#tecnologia">Tecnologia</a></li>
-        <li><a href="#sobre">Sobre</a></li>
-        <li><a href="#contato">Contato</a></li>
-      </ul>
+      <nav class="foot-col" aria-label="Soluções">
+        <h4>Soluções</h4>
+        <a href="#capivara">Capivara Security</a>
+        <a href="#esp32">ESP32 Security Lab</a>
+        <a href="#tecnologia">Tecnologia</a>
+      </nav>
+      <nav class="foot-col" aria-label="Empresa">
+        <h4>Empresa</h4>
+        <a href="#sobre">Sobre a InboxTrust</a>
+        <a href="#valor">Por que a InboxTrust</a>
+        <a href="#inicio">Início</a>
+      </nav>
+      <nav class="foot-col" aria-label="Contato">
+        <h4>Contato</h4>
+        <a href="#contato">Solicitar demonstração</a>
+        <a href="mailto:contato@inboxtrust.com.br">contato@inboxtrust.com.br</a>
+      </nav>
     </div>
     <p class="foot-verse">“Deus vê pessoas onde muitos só enxergam uma grande cidade.”<span>Jonas 4:11</span></p>
     <div class="foot-bottom">
